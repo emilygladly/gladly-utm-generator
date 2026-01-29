@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gladly UTM Link Generator</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: #1a1a2e;
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            opacity: 0.8;
+            font-size: 14px;
+        }
+
+        .form-container {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .form-group label .required {
+            color: #e74c3c;
+            margin-left: 4px;
+        }
+
+        .form-group label .optional {
+            color: #95a5a6;
+            font-weight: 400;
+            font-size: 12px;
+            margin-left: 4px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e1e5eb;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.2s ease;
+            background: #fafbfc;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group input::placeholder {
+            color: #adb5bd;
+        }
+
+        .form-group small {
+            display: block;
+            margin-top: 6px;
+            color: #6c757d;
+            font-size: 12px;
+        }
+
+        .result-section {
+            background: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+            padding: 30px;
+        }
+
+        .result-section h3 {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 16px;
+        }
+
+        .result-box {
+            background: white;
+            border: 2px solid #e1e5eb;
+            border-radius: 10px;
+            padding: 16px;
+            word-break: break-all;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 13px;
+            color: #495057;
+            min-height: 60px;
+            line-height: 1.6;
+        }
+
+        .result-box.has-url {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .result-box .placeholder {
+            color: #adb5bd;
+            font-style: italic;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .copy-btn {
+            margin-top: 16px;
+            width: 100%;
+            padding: 14px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .copy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .copy-btn:active {
+            transform: translateY(0);
+        }
+
+        .copy-btn.copied {
+            background: #27ae60;
+        }
+
+        .copy-btn:disabled {
+            background: #adb5bd;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .utm-preview {
+            margin-top: 20px;
+            padding: 16px;
+            background: white;
+            border-radius: 10px;
+            border: 1px solid #e1e5eb;
+        }
+
+        .utm-preview h4 {
+            font-size: 14px;
+            color: #6c757d;
+            margin-bottom: 12px;
+        }
+
+        .utm-param {
+            display: flex;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        .utm-param:last-child {
+            margin-bottom: 0;
+        }
+
+        .utm-param .param-name {
+            color: #667eea;
+            font-weight: 600;
+            min-width: 120px;
+        }
+
+        .utm-param .param-value {
+            color: #495057;
+            word-break: break-all;
+        }
+
+        .utm-param .param-value.empty {
+            color: #adb5bd;
+            font-style: italic;
+        }
+
+        .instructions {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+
+        .instructions h4 {
+            color: #856404;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .instructions ol {
+            margin-left: 20px;
+            color: #856404;
+            font-size: 13px;
+        }
+
+        .instructions li {
+            margin-bottom: 4px;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 20px 10px;
+            }
+
+            .header {
+                padding: 24px 20px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .form-container,
+            .result-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Gladly UTM Link Generator</h1>
+            <p>Generate tracked URLs for your marketing campaigns</p>
+        </div>
+
+        <div class="form-container">
+            <div class="instructions">
+                <h4>How to use:</h4>
+                <ol>
+                    <li>Enter your destination URL</li>
+                    <li>Select or enter the required fields (marked with *)</li>
+                    <li>Optionally add your team and content identifier</li>
+                    <li>Copy the generated URL</li>
+                </ol>
+            </div>
+
+            <div class="form-group">
+                <label>Website URL <span class="required">*</span></label>
+                <input type="url" id="websiteUrl" placeholder="https://www.gladly.ai/get-started/">
+                <small>The destination page URL (with or without https://)</small>
+            </div>
+
+            <div class="form-group">
+                <label>Source <span class="required">*</span></label>
+                <select id="source">
+                    <option value="">-- Select a source --</option>
+                    <optgroup label="Email & Marketing Automation">
+                        <option value="marketo">Marketo</option>
+                        <option value="outreach">Outreach</option>
+                        <option value="gmail">Gmail</option>
+                    </optgroup>
+                    <optgroup label="Social Media">
+                        <option value="linkedin">LinkedIn</option>
+                        <option value="facebook">Facebook</option>
+                        <option value="twitter">Twitter</option>
+                        <option value="employeeadvo">Employee Advocacy</option>
+                    </optgroup>
+                    <optgroup label="Advertising">
+                        <option value="google">Google</option>
+                        <option value="6sense">6sense</option>
+                        <option value="rollworks">RollWorks</option>
+                        <option value="gartner">Gartner</option>
+                    </optgroup>
+                    <optgroup label="Content & PR">
+                        <option value="industrydive">Industry Dive</option>
+                        <option value="modernretail">Modern Retail</option>
+                        <option value="glossy">Glossy</option>
+                        <option value="cision">Cision</option>
+                        <option value="fortune">Fortune</option>
+                        <option value="forbes">Forbes</option>
+                    </optgroup>
+                    <optgroup label="Events & Other">
+                        <option value="event">Event</option>
+                        <option value="webinar">Webinar</option>
+                        <option value="gladly">Gladly (In-App)</option>
+                        <option value="sidekick">Sidekick</option>
+                        <option value="wistia">Wistia</option>
+                        <option value="prospectbase">ProspectBase</option>
+                    </optgroup>
+                </select>
+                <small>What vendor/platform are you using?</small>
+            </div>
+
+            <div class="form-group">
+                <label>Medium <span class="required">*</span></label>
+                <select id="medium">
+                    <option value="">-- Select a medium --</option>
+                    <optgroup label="Paid">
+                        <option value="cpc">CPC (Cost Per Click)</option>
+                        <option value="paid-social">Paid Social</option>
+                        <option value="display">Display</option>
+                    </optgroup>
+                    <optgroup label="Organic">
+                        <option value="email">Email</option>
+                        <option value="organic-social">Organic Social</option>
+                    </optgroup>
+                    <optgroup label="Content & PR">
+                        <option value="content-syndication">Content Syndication</option>
+                        <option value="pr">PR</option>
+                    </optgroup>
+                    <optgroup label="Events & Sales">
+                        <option value="event-sourced">Event Sourced</option>
+                        <option value="sales-referred">Sales Referred</option>
+                        <option value="in-app-notification">In-App Notification</option>
+                        <option value="video">Video</option>
+                        <option value="referral">Referral</option>
+                    </optgroup>
+                </select>
+                <small>What channel are you using?</small>
+            </div>
+
+            <div class="form-group">
+                <label>Parent Campaign Name <span class="required">*</span></label>
+                <input type="text" id="campaign" placeholder="e.g., parent-25-01-handraiser-evergreen-demo">
+                <small>What is the offer you are promoting? Use lowercase with hyphens.</small>
+            </div>
+
+            <div class="form-group">
+                <label>Team <span class="optional">(Optional)</span></label>
+                <select id="team">
+                    <option value="">-- Select your team --</option>
+                    <option value="inbound">Inbound</option>
+                    <option value="demandg">Demand Gen (demandg)</option>
+                    <option value="dg">DG</option>
+                    <option value="sales">Sales</option>
+                </select>
+                <small>What team is owning this promotion?</small>
+            </div>
+
+            <div class="form-group">
+                <label>Content <span class="optional">(Optional)</span></label>
+                <input type="text" id="content" placeholder="e.g., newsletter, banner-ad-v1">
+                <small>Use to differentiate ads/emails/links that point to the same URL. Use lowercase with hyphens.</small>
+            </div>
+        </div>
+
+        <div class="result-section">
+            <h3>Generated URL</h3>
+            <div class="result-box" id="resultBox">
+                <span class="placeholder">Fill in the required fields above to generate your UTM link...</span>
+            </div>
+            <button class="copy-btn" id="copyBtn" disabled>Copy to Clipboard</button>
+
+            <div class="utm-preview">
+                <h4>UTM Parameters Preview:</h4>
+                <div class="utm-param">
+                    <span class="param-name">utm_source:</span>
+                    <span class="param-value" id="previewSource"><span class="empty">not set</span></span>
+                </div>
+                <div class="utm-param">
+                    <span class="param-name">utm_medium:</span>
+                    <span class="param-value" id="previewMedium"><span class="empty">not set</span></span>
+                </div>
+                <div class="utm-param">
+                    <span class="param-name">utm_campaign:</span>
+                    <span class="param-value" id="previewCampaign"><span class="empty">not set</span></span>
+                </div>
+                <div class="utm-param">
+                    <span class="param-name">utm_content:</span>
+                    <span class="param-value" id="previewContent"><span class="empty">not set</span></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get all form elements
+        const websiteUrlInput = document.getElementById('websiteUrl');
+        const sourceSelect = document.getElementById('source');
+        const mediumSelect = document.getElementById('medium');
+        const campaignInput = document.getElementById('campaign');
+        const teamSelect = document.getElementById('team');
+        const contentInput = document.getElementById('content');
+        const resultBox = document.getElementById('resultBox');
+        const copyBtn = document.getElementById('copyBtn');
+
+        // Preview elements
+        const previewSource = document.getElementById('previewSource');
+        const previewMedium = document.getElementById('previewMedium');
+        const previewCampaign = document.getElementById('previewCampaign');
+        const previewContent = document.getElementById('previewContent');
+
+        // Helper function to format text (lowercase, replace spaces with hyphens)
+        function formatParam(text) {
+            return text.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9\-_]/g, '');
+        }
+
+        // Helper function to normalize URL
+        function normalizeUrl(url) {
+            url = url.trim();
+            if (!url) return '';
+
+            // Add https:// if no protocol specified
+            if (!url.match(/^https?:\/\//i)) {
+                url = 'https://' + url;
+            }
+            return url;
+        }
+
+        // Update preview
+        function updatePreview(element, value) {
+            if (value) {
+                element.innerHTML = value;
+                element.classList.remove('empty');
+            } else {
+                element.innerHTML = '<span class="empty">not set</span>';
+                element.classList.add('empty');
+            }
+        }
+
+        // Generate the UTM URL
+        function generateUrl() {
+            const baseUrl = normalizeUrl(websiteUrlInput.value);
+            const source = sourceSelect.value;
+            const medium = mediumSelect.value;
+            const campaign = formatParam(campaignInput.value);
+            const team = teamSelect.value;
+            const content = formatParam(contentInput.value);
+
+            // Update previews
+            updatePreview(previewSource, source);
+            updatePreview(previewMedium, medium);
+
+            // Campaign includes team if provided
+            const fullCampaign = team ? `${campaign}-${team}` : campaign;
+            updatePreview(previewCampaign, campaign ? fullCampaign : '');
+            updatePreview(previewContent, content);
+
+            // Check if required fields are filled
+            if (!baseUrl || !source || !medium || !campaign) {
+                resultBox.innerHTML = '<span class="placeholder">Fill in the required fields above to generate your UTM link...</span>';
+                resultBox.classList.remove('has-url');
+                copyBtn.disabled = true;
+                return;
+            }
+
+            // Build UTM parameters
+            const params = new URLSearchParams();
+            params.set('utm_source', source);
+            params.set('utm_medium', medium);
+            params.set('utm_campaign', fullCampaign);
+            if (content) {
+                params.set('utm_content', content);
+            }
+
+            // Determine the separator (? or &)
+            const separator = baseUrl.includes('?') ? '&' : '?';
+
+            // Generate final URL
+            const finalUrl = baseUrl + separator + params.toString();
+
+            // Display the result
+            resultBox.textContent = finalUrl;
+            resultBox.classList.add('has-url');
+            copyBtn.disabled = false;
+
+            return finalUrl;
+        }
+
+        // Copy to clipboard
+        copyBtn.addEventListener('click', async function() {
+            const url = resultBox.textContent;
+            if (!url || url.includes('Fill in')) return;
+
+            try {
+                await navigator.clipboard.writeText(url);
+                this.textContent = 'Copied!';
+                this.classList.add('copied');
+
+                setTimeout(() => {
+                    this.textContent = 'Copy to Clipboard';
+                    this.classList.remove('copied');
+                }, 2000);
+            } catch (err) {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = url;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+
+                this.textContent = 'Copied!';
+                this.classList.add('copied');
+
+                setTimeout(() => {
+                    this.textContent = 'Copy to Clipboard';
+                    this.classList.remove('copied');
+                }, 2000);
+            }
+        });
+
+        // Add event listeners to all form fields
+        [websiteUrlInput, sourceSelect, mediumSelect, campaignInput, teamSelect, contentInput].forEach(element => {
+            element.addEventListener('input', generateUrl);
+            element.addEventListener('change', generateUrl);
+        });
+
+        // Initialize
+        generateUrl();
+    </script>
+</body>
+</html>
